@@ -9,6 +9,7 @@ var Paddle = function(x, y, width, height) {
     this.width = width;
     this.height = height;
     this.y_speed = 0;
+    this.score = 0;
     this.key = null;
 }
 var ball = function(x, y, radius, x_speed, y_speed) {
@@ -17,6 +18,16 @@ var ball = function(x, y, radius, x_speed, y_speed) {
     this.radius = radius;
     this.x_speed = x_speed;
     this.y_speed = y_speed;
+}
+Paddle.prototype.computerScoreUpdate = function() {
+    context.font = "23px Arial";
+    context.fillStyle = "#CC3300";
+    context.fillText(this.score, 10, 30);
+}
+Paddle.prototype.playerScoreUpdate = function() {
+    context.font = "23px Arial";
+    context.fillStyle = "#CC3300";
+    context.fillText(this.score, 480, 30);
 }
 Paddle.prototype.render = function() {
     context.beginPath();
@@ -40,29 +51,29 @@ ball.prototype.update = function() {
         this.y = 200;
         this.x_speed = -3;
         this.y_speed = 0;
+        Player.score++;
+        console.log(Player.score);
         
     } else if(this.x + 5 > 500) {
         this.x = 250;
         this.y = 200;
         this.x_speed = 3;
         this.y_speed = 0;
+        Computer.score++;
+        console.log(Computer.score);
     
     }
     
     if(this.x < Player.x + Player.width && this.y > Player.y && this.y < Player.y + Player.height) {
         var yRatio = 3 * ((this.y - Player.y) / 40.0);
-        console.log(yRatio);
         this.y_speed = yRatio;
-        console.log(this.y_speed);
         this.x_speed *= -1;
         
         
     }
     if(this.x > Computer.x && this.y > Computer.y && this.y < Computer.y + Computer.height) {
         var yRatio = 3 * ((this.y - Player.y) / 40.0);
-        console.log(yRatio);
         this.y_speed = yRatio;
-        console.log(this.y_speed);
         this.x_speed *= -1;
     }
     
@@ -82,12 +93,18 @@ Paddle.prototype.move = function(event) {
 }
 Paddle.prototype.update = function() {
     if (Ball.y < this.y + 40 && this.y > 0 && this.y < 400) {
-        this.y -= 3;
+        this.y -= 0;
     } else if (Math.abs(Ball.y - this.y) < 10) {
         
     } else {
-        this.y += 3;
+        this.y += 0;
     }
+}
+Paddle.prototype.gameEnd = function(text) {
+    if(this.score === 10) {
+        alert(text + " Won!");
+        location.reload();
+  }
 }
 
 ball.prototype.render = function() {
@@ -125,8 +142,12 @@ var step = function() {
     Ball.render();
     Player.move();
     Player.render();
+    Player.playerScoreUpdate();
+    Player.gameEnd("Computer");
     Computer.render();
     Computer.update();
+    Computer.computerScoreUpdate();
+    Computer.gameEnd("Player");
     animate(step);
 }
 
