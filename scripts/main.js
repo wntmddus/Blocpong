@@ -93,11 +93,11 @@ Paddle.prototype.move = function(event) {
 }
 Paddle.prototype.update = function() {
     if (Ball.y < this.y + 40 && this.y > 0 && this.y < 400) {
-        this.y -= 0;
+        this.y -= 3;
     } else if (Math.abs(Ball.y - this.y) < 10) {
         
     } else {
-        this.y += 0;
+        this.y += 3;
     }
 }
 Paddle.prototype.gameEnd = function(text) {
