@@ -8,6 +8,8 @@ var Paddle = function(x, y, width, height) {
     this.y = y;
     this.width = width;
     this.height = height;
+    this.y_speed = 0;
+    this.key = null;
 }
 var ball = function(x, y, radius, x_speed, y_speed) {
     this.x = x;
@@ -26,20 +28,26 @@ ball.prototype.update = function() {
     this.x += this.x_speed;
     this.y += this.y_speed;
     
-    if(this.y - 20 < 0) {
+    if(this.y < 0) {
         this.y = 5;
         this.y_speed = -this.y_speed;
     } else if(this.y + 5 > 400) {
         this.y = 395;
         this.y_speed = -this.y_speed;
     }
-   /* if(this.x - 5 < 0) {
-        this.x = 5;
-        this.x_speed = -this.x_speed;
+    if(this.x - 5 < 0) {
+        this.x = 250;
+        this.y = 200;
+        this.x_speed = -3;
+        this.y_speed = 0;
+        
     } else if(this.x + 5 > 500) {
-        this.x = 495;
-        this.x_speed = -this.x_speed;
-    }*/
+        this.x = 250;
+        this.y = 200;
+        this.x_speed = 3;
+        this.y_speed = 0;
+    
+    }
     
     if(this.x < Player.x + Player.width && this.y > Player.y && this.y < Player.y + Player.height) {
         var yRatio = 3 * ((this.y - Player.y) / 40.0);
@@ -51,16 +59,34 @@ ball.prototype.update = function() {
         
     }
     if(this.x > Computer.x && this.y > Computer.y && this.y < Computer.y + Computer.height) {
-        this.y_speed *= -1;
+        var yRatio = 3 * ((this.y - Player.y) / 40.0);
+        console.log(yRatio);
+        this.y_speed = yRatio;
+        console.log(this.y_speed);
         this.x_speed *= -1;
     }
     
 }
+Paddle.prototype.keydown = function(event) {
+    this.key = event.keyCode;
+}
+Paddle.prototype.keyup = function(event) {
+    this.key = null;
+}
 Paddle.prototype.move = function(event) {
-    if (event.keyCode == 38 && this.y - 5 > 0) {
-        this.y -= 10;
-    } else if (event.keyCode == 40 && this.y + 5 < canvas.height - this.height) {
-        this.y += 10;
+    if (this.key == 38 && this.y - 5 > 0) {
+        this.y -= 5
+    } else if (this.key == 40 && this.y + 5 < canvas.height - this.height) {
+        this.y += 5;
+    }
+}
+Paddle.prototype.update = function() {
+    if (Ball.y < this.y + 40 && this.y > 0 && this.y < 400) {
+        this.y -= 3;
+    } else if (Math.abs(Ball.y - this.y) < 10) {
+        
+    } else {
+        this.y += 3;
     }
 }
 
@@ -70,7 +96,7 @@ ball.prototype.render = function() {
     context.fillStyle = "black";
     context.fill();
 }
-var Ball = new ball(250, 200, 20, -3, 0);
+var Ball = new ball(250, 200, 10, -5, 0);
 var Player = new Paddle(0, 160, 20, 80);
 var Computer = new Paddle(480, 160, 20, 80);
 
@@ -97,8 +123,10 @@ var step = function() {
     drawline();
     Ball.update();
     Ball.render();
+    Player.move();
     Player.render();
     Computer.render();
+    Computer.update();
     animate(step);
 }
 
@@ -106,8 +134,5 @@ window.onload = function() {
     animate(step);
 };
 
-window.addEventListener('keydown', Player.move.bind(Player), false);
-
-window.addEventListener('keyup', function(event) {
-       
-}, false);
+window.addEventListener('keydown', Player.keydown.bind(Player), false);
+window.addEventListener('keyup', Player.keyup.bind(Player), false);
