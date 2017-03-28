@@ -104,6 +104,7 @@ Paddle.prototype.gameEnd = function(text) {
     if(this.score === 10) {
         alert(text + " Won!");
         location.reload();
+        this.score = 0;
   }
 }
 
@@ -157,3 +158,4 @@ window.onload = function() {
 
 window.addEventListener('keydown', Player.keydown.bind(Player), false);
 window.addEventListener('keyup', Player.keyup.bind(Player), false);
+
